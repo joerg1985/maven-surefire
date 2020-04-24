@@ -340,6 +340,31 @@ public class SmartStackTraceParserTest
         }
     }
 
+    public void testStackTraceWithFocusOnClassAsStringWithSuppressedThrowable()
+    {
+        try
+        {
+            new StackTraceFocusedOnClass.D().d();
+            fail();
+        }
+        catch ( Exception e )
+        {
+            String trace = stackTraceWithFocusOnClassAsString( e, StackTraceFocusedOnClass.B.class.getName() );
+
+            assertEquals(
+                    "java.lang.RuntimeException: java.lang.IllegalStateException: java.io.IOException: I/O error\n"
+            + "\tat org.apache.maven.surefire.report.StackTraceFocusedOnClass$B.b(StackTraceFocusedOnClass.java:65)\n"
+            + "Suppressed: java.lang.RuntimeException: java.lang.IllegalStateException: java.io.IOException: I/O error\n"
+            + "\tat org.apache.maven.surefire.report.StackTraceFocusedOnClass$B.b(StackTraceFocusedOnClass.java:65)\n"
+            + "Caused by: java.lang.IllegalStateException: java.io.IOException: I/O error\n"
+            + "\tat org.apache.maven.surefire.report.StackTraceFocusedOnClass$B.b(StackTraceFocusedOnClass.java:61)\n"
+            + "Caused by: java.io.IOException: I/O error\n"
+            + "\tat org.apache.maven.surefire.report.StackTraceFocusedOnClass$B.abs(StackTraceFocusedOnClass.java:73)\n"
+            + "\tat org.apache.maven.surefire.report.StackTraceFocusedOnClass$B.b(StackTraceFocusedOnClass.java:61)\n",
+            trace );
+        }
+    }
+
     private ExecutionException getSingleNested()
     {
         FutureTask<Object> futureTask = new FutureTask<>( new RunnableTestClass2() );

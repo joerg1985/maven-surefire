@@ -83,4 +83,29 @@ final class StackTraceFocusedOnClass
             b.b();
         }
     }
+
+    static class D
+    {
+        private final B b = new B();
+
+        void d()
+        {
+            try
+            {
+                b.b();
+            }
+            catch ( Exception e )
+            {
+                try
+                {
+                    b.b();
+                }
+                catch ( RuntimeException ex )
+                {
+                    e.addSuppressed(ex);
+                    throw e;
+                }
+            }
+        }
+    }
 }

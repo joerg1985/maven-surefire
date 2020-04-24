@@ -233,8 +233,9 @@ public class SmartStackTraceParser
         StackTraceFilter filter = new ClassNameStackTraceFilter( className );
         Throwable topmost = findTopmostWithClass( t, filter );
         List<StackTraceElement> stackTraceElements = focusInsideClass( topmost.getStackTrace(), filter );
-        String s = causeToString( topmost.getCause(), filter );
-        return toString( t, stackTraceElements, filter ) + s;
+        String s = suppressedToString( topmost.getSuppressed(), filter );
+        String c = causeToString( topmost.getCause(), filter );
+        return toString( t, stackTraceElements, filter ) + s + c;
     }
 
     static List<StackTraceElement> focusInsideClass( StackTraceElement[] stackTrace, StackTraceFilter filter )
@@ -270,6 +271,16 @@ public class SmartStackTraceParser
             resp.append( "Caused by: " );
             resp.append( toString( cause, asList( cause.getStackTrace() ), filter ) );
             cause = cause.getCause();
+        }
+        return resp.toString();
+    }
+
+    private static String suppressedToString( Throwable[] suppressed, StackTraceFilter filter )
+    {
+        StringBuilder resp = new StringBuilder();
+        for ( Throwable s : suppressed ) {
+            resp.append( "Suppressed: " );
+            resp.append( toString( s, asList( s.getStackTrace() ), filter ) );
         }
         return resp.toString();
     }
